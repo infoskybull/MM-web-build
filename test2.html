@@ -78,6 +78,7 @@
                 this.isListening = false;
                 this.speechBuffer = '';
                 this.permissionGranted = false;
+                this.stream = null;
 
                 this.init();
             }
@@ -122,7 +123,7 @@
 
             async requestMicrophonePermission() {
                 try {
-                    await navigator.mediaDevices.getUserMedia({ audio: true });
+                    await this.getMic();
                     this.permissionGranted = true;
                     localStorage.setItem('microphonePermission', 'granted');
                     this.updatePermissionStatus();
@@ -134,6 +135,13 @@
                     this.updatePermissionStatus();
                     return false;
                 }
+            }
+
+            async getMic() {
+              if (!this.stream) {
+                this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+              }
+              return this.stream;
             }
 
             updatePermissionStatus() {
