@@ -192,6 +192,7 @@
                 };
 
                 this.recognition.onend = () => {
+                    console.log(this.speechBuffer);
                     if (this.speechBuffer.trim()) {
                         this.insertTextAtCursor(this.speechBuffer.trim());
                         this.speechBuffer = '';
