@@ -215,15 +215,15 @@
             async startListening() {
                 const storedPermission = localStorage.getItem('microphonePermission');
 
-                if (storedPermission === 'denied') {
-                    this.showMessage('Microphone access denied. Please enable it in settings and refresh.', 'error');
-                    return;
-                }
-
                 // if not yet granted, request first time
                 if (!this.permissionGranted && storedPermission !== 'granted') {
                     const ok = await this.requestMicrophonePermission();
                     if (!ok) return;
+                }
+
+                if (storedPermission === 'denied') {
+                    this.showMessage('Microphone access denied. Please enable it in settings and refresh.', 'error');
+                    return;
                 }
 
                 try {
