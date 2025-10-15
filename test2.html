@@ -91,6 +91,7 @@
             async checkPermissions() {
                 try {
                     const stored = localStorage.getItem('microphonePermission');
+                    console.log(stored);
                     if (stored === 'granted') {
                         this.permissionGranted = true;
                         this.updatePermissionStatus();
