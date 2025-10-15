@@ -45,13 +45,6 @@
     </div>
 
     <div class="field-container">
-        <div class="field-header">Textarea</div>
-        <div class="voice-container">
-            <textarea id="Textarea" placeholder="Type your comments..."></textarea>
-        </div>
-    </div>
-
-    <div class="field-container">
         <div class="field-header">Comments Textarea with Voice</div>
         <div class="voice-container">
             <textarea id="commentsTextarea" placeholder="Type or speak your comments..."></textarea>
@@ -59,8 +52,6 @@
         </div>
         <div id="voiceMessage2" style="display: none;"></div>
     </div>
-
-    <div id="error_block">...</div>
 
     <script>
         class AutoResizeTextarea {
@@ -87,7 +78,6 @@
                 this.isListening = false;
                 this.speechBuffer = '';
                 this.permissionGranted = false;
-                this.stream = null;
 
                 this.init();
             }
@@ -132,7 +122,7 @@
 
             async requestMicrophonePermission() {
                 try {
-                    await this.getMic();
+                    await navigator.mediaDevices.getUserMedia({ audio: true });
                     this.permissionGranted = true;
                     localStorage.setItem('microphonePermission', 'granted');
                     this.updatePermissionStatus();
@@ -144,21 +134,6 @@
                     this.updatePermissionStatus();
                     return false;
                 }
-            }
-
-            async getMic() {
-              if (!this.stream) {
-                this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                console.log( Date.now() );
-                console.log( this.stream );
-                console.log( this.stream.id );
-                console.log( this.stream.active );
-                var str = Date.now() + "  | " + this.stream.active + "  | " + this.stream.id;
-                console.log( document.getElementById("error_block") );
-                console.log( document.getElementById("error_block").innerHTML  );
-                document.getElementById("error_block").innerHTML  = str;
-              }
-              return this.stream;
             }
 
             updatePermissionStatus() {
@@ -240,12 +215,6 @@
             async startListening() {
                 const storedPermission = localStorage.getItem('microphonePermission');
 
-                if(!!this.stream && this.stream.active){
-                    await getStream();
-                    this.recognition.start();
-                    return;
-                }
-                
                 // if not yet granted, request first time
                 if (!this.permissionGranted && storedPermission !== 'granted') {
                     const ok = await this.requestMicrophonePermission();
@@ -263,24 +232,6 @@
                     console.error('Recognition start error:', err);
                     this.showMessage('Could not start speech recognition.', 'error');
                 }
-            }
-
-            async getStream(){
-                if (this.stream) {
-                  console.log("Микрофон уже активен, повторный запрос не требуется.");
-                  return this.stream;
-                }
-            
-                // Проверяем наличие API
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                  throw new Error("Ваш браузер не поддерживает getUserMedia()");
-                }
-            
-                // Запрашиваем доступ
-                this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-                console.log("Микрофон успешно получен:", this.stream);
-                return this.stream;
             }
 
             stopListening() {
