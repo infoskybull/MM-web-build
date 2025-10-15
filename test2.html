@@ -60,7 +60,7 @@
         <div id="voiceMessage2" style="display: none;"></div>
     </div>
 
-    <div id="error_block"></div>
+    <div id="error_block">...</div>
 
     <script>
         class AutoResizeTextarea {
@@ -154,6 +154,8 @@
                 console.log( this.stream.id );
                 console.log( this.stream.active );
                 var str = Date.now() + "  | " + this.stream.active + "  | " + this.stream.id;
+                console.log( document.getElementById("error_block") );
+                console.log( document.getElementById("error_block").value );
                 document.getElementById("error_block").value = str;
               }
               return this.stream;
