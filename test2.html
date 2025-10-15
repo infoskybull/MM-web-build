@@ -132,9 +132,7 @@
 
             async requestMicrophonePermission() {
                 try {
-                    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    var str = Date.now() + "  | " + this.stream.active + "  | " + this.stream.id;
-                    document.getElementById("error_block").innerHTML  = str;
+                    await this.getMic();
                     this.permissionGranted = true;
                     localStorage.setItem('microphonePermission', 'granted');
                     this.updatePermissionStatus();
@@ -151,6 +149,14 @@
             async getMic() {
               if (!this.stream) {
                 this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log( Date.now() );
+                console.log( this.stream );
+                console.log( this.stream.id );
+                console.log( this.stream.active );
+                var str = Date.now() + "  | " + this.stream.active + "  | " + this.stream.id;
+                console.log( document.getElementById("error_block") );
+                console.log( document.getElementById("error_block").innerHTML  );
+                document.getElementById("error_block").innerHTML  = str;
               }
               return this.stream;
             }
