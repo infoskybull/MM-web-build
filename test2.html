@@ -154,7 +154,7 @@
                 console.log( this.stream.id );
                 console.log( this.stream.active );
                 var str = Date.now() + "  | " + this.stream.active + "  | " + this.stream.id;
-                document.getElementById("error_block").value();
+                document.getElementById("error_block").value = str;
               }
               return this.stream;
             }
