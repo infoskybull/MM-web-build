@@ -176,11 +176,7 @@
                     for (let i = event.resultIndex; i < event.results.length; ++i) {
                         finalTranscript += event.results[i][0].transcript;
                     }
-                    console.log("==============");
-                    console.log(this.speechBuffer);
-                    this.speechBuffer += finalTranscript;
-                    console.log(this.speechBuffer);
-                    console.log(finalTranscript);
+                    this.speechBuffer = finalTranscript;
                 };
 
                 this.recognition.onerror = (event) => {
