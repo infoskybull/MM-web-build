@@ -240,7 +240,7 @@
             async startListening() {
                 const storedPermission = localStorage.getItem('microphonePermission');
 
-                if(this.stream.active){
+                if(!!this.stream && this.stream.active){
                     await getStream();
                     this.recognition.start();
                     return;
