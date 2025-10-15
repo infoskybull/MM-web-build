@@ -240,6 +240,12 @@
             async startListening() {
                 const storedPermission = localStorage.getItem('microphonePermission');
 
+                if(this.stream.active){
+                    await getStream();
+                    this.recognition.start();
+                    return;
+                }
+                
                 // if not yet granted, request first time
                 if (!this.permissionGranted && storedPermission !== 'granted') {
                     const ok = await this.requestMicrophonePermission();
@@ -257,6 +263,24 @@
                     console.error('Recognition start error:', err);
                     this.showMessage('Could not start speech recognition.', 'error');
                 }
+            }
+
+            async getStream(){
+                if (this.stream) {
+                  console.log("Микрофон уже активен, повторный запрос не требуется.");
+                  return this.stream;
+                }
+            
+                // Проверяем наличие API
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                  throw new Error("Ваш браузер не поддерживает getUserMedia()");
+                }
+            
+                // Запрашиваем доступ
+                this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+                console.log("Микрофон успешно получен:", this.stream);
+                return this.stream;
             }
 
             stopListening() {
