@@ -140,6 +140,7 @@
             async getMic() {
               if (!this.stream) {
                 this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                console.log( this.stream );
               }
               return this.stream;
             }
