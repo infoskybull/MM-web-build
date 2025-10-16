@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Recorder Demo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 30px;
+      background: white;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #2b8af7;
+      color: white;
+      font-size: 16px;
+    }
+    #timer {
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    audio {
+      margin-top: 20px;
+      width: 90%;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🎤 Запись с микрофона</h2>
+  <button id="startBtn">▶️ Начать запись</button>
+  <button id="stopBtn" disabled>⏹ Остановить</button>
+
+  <div id="timer">Длительность: 0.0 сек</div>
+  <audio id="audioPlayer" controls></audio>
+
+  <script>
+    let stream = null;
+    let mediaRecorder = null;
+    let chunks = [];
+    let startTime = null;
+    let timerInterval = null;
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const timer = document.getElementById('timer');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    // 🧩 Получаем микрофон один раз
+    async function getMicrophone() {
+      if (!stream) {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          console.log("🎤 Микрофон доступен");
+        } catch (err) {
+          alert("Ошибка доступа к микрофону: " + err.message);
+          throw err;
+        }
+      }
+      return stream;
+    }
+
+    startBtn.addEventListener('click', async () => {
+      try {
+        const micStream = await getMicrophone(); // Запрашивает доступ только 1 раз
+        chunks = [];
+
+        mediaRecorder = new MediaRecorder(micStream);
+        mediaRecorder.ondataavailable = e => chunks.push(e.data);
+
+        mediaRecorder.onstart = () => {
+          startTime = Date.now();
+          startBtn.disabled = true;
+          stopBtn.disabled = false;
+          timerInterval = setInterval(() => {
+            const seconds = ((Date.now() - startTime) / 1000).toFixed(1);
+            timer.textContent = `Длительность: ${seconds} сек`;
+          }, 100);
+        };
+
+        mediaRecorder.onstop = () => {
+          clearInterval(timerInterval);
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          const url = URL.createObjectURL(blob);
+          audioPlayer.src = url;
+
+          console.log("🎧 Запись завершена, файл:", blob);
+        };
+
+        mediaRecorder.start();
+      } catch (err) {
+        console.error("Ошибка при запуске записи:", err);
+      }
+    });
+
+    stopBtn.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        mediaRecorder.stop();
+      }
+    });
+  </script>
+
+</body>
+</html>
