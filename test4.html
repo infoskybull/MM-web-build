@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Record Audio</title>
+  <style>
+    body { 
+      font-family: sans-serif; 
+      text-align: center; 
+      padding: 40px; 
+      background: white;
+    }
+    button {
+      margin: 10px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #2b8af7;
+      color: white;
+      font-size: 16px;
+    }
+    #timer {
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    audio {
+      margin-top: 20px;
+      width: 90%;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎤 Record Audio</h2>
+
+  <button id="startBtn">▶️ Start Recording</button>
+  <button id="stopBtn" disabled>⏹ Stop Recording</button>
+
+  <div id="timer">Duration: 0.0 sec</div>
+  <audio id="audioPlayer" controls></audio>
+
+  <script>
+    let stream = null;
+    let recorder = null;
+    let chunks = [];
+    let startTime = null;
+    let timerInterval = null;
+
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const timer = document.getElementById('timer');
+    const player = document.getElementById('audioPlayer');
+
+    // Get microphone permission once
+    async function getMicrophone() {
+      if (!stream) {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log("🎤 Microphone access granted");
+      }
+      return stream;
+    }
+
+    startBtn.addEventListener('click', async () => {
+      try {
+        const mic = await getMicrophone();
+        chunks = [];
+        recorder = new MediaRecorder(mic);
+
+        recorder.ondataavailable = e => chunks.push(e.data);
+
+        recorder.onstart = () => {
+          startTime = Date.now();
+          timerInterval = setInterval(() => {
+            const sec = ((Date.now() - startTime) / 1000).toFixed(1);
+            timer.textContent = `Duration: ${sec} sec`;
+          }, 100);
+          startBtn.disabled = true;
+          stopBtn.disabled = false;
+        };
+
+        recorder.onstop = () => {
+          clearInterval(timerInterval);
+          startBtn.disabled = false;
+          stopBtn.disabled = true;
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          const url = URL.createObjectURL(blob);
+          player.src = url;
+
+          // Save blob to sessionStorage as base64
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            sessionStorage.setItem('audioData', reader.result);
+            console.log('🎧 Audio saved to sessionStorage');
+          };
+          reader.readAsDataURL(blob);
+        };
+
+        recorder.start();
+      } catch (err) {
+        alert("Microphone access error: " + err.message);
+        console.error(err);
+      }
+    });
+
+    stopBtn.addEventListener('click', () => {
+      if (recorder && recorder.state === 'recording') {
+        recorder.stop();
+      }
+    });
+
+    // Navigation to transcription page
+    const toTranscribeBtn = document.createElement('button');
+    toTranscribeBtn.textContent = '➡️ Go to Transcription Page';
+    toTranscribeBtn.onclick = () => {
+      if (!sessionStorage.getItem('audioData')) {
+        alert('Please record audio first!');
+        return;
+      }
+      window.location.href = 'transcribe.html';
+    };
+    document.body.appendChild(toTranscribeBtn);
+  </script>
+</body>
+</html>
