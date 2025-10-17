@@ -252,7 +252,7 @@
                 const currentValue = this.textarea.value;
                 const newValue = currentValue.substring(0, start) + ' ' + text + ' ' + currentValue.substring(end);
                 this.textarea.value = newValue.replace(/\s{2,}/g, ' ').trim();
-                var message = newValue + "<br/>" + newValue.trim() + "<br/>123" + "<br/> 123 ";
+                var message = newValue.length + " - " + newValue + "<br/>" + newValue.trim().length + " - " + newValue.trim();
                 document.getElementById("message_block").innerHTML = message;
                 const newPos = start + text.length + 1;
                 this.textarea.setSelectionRange(newPos, newPos);
