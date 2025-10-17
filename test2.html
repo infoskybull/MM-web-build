@@ -247,7 +247,7 @@
                 const end = this.textarea.selectionEnd || 0;
                 const currentValue = this.textarea.value;
                 const newValue = currentValue.substring(0, start) + ' ' + text + ' ' + currentValue.substring(end);
-                this.textarea.value = newValue.replace(/\s{2,}/g, ' ')trim();
+                this.textarea.value = newValue.replace(/\s{2,}/g, ' ').trim();
                 const newPos = start + text.length + 1;
                 this.textarea.setSelectionRange(newPos, newPos);
                 this.textarea.focus();
