@@ -54,6 +54,10 @@
         <div id="voiceMessage2" style="display: none;"></div>
     </div>
 
+    <div id="message_block">
+        
+    </div>
+        
     <script>
         class AutoResizeTextarea {
             constructor(textarea) {
@@ -248,6 +252,8 @@
                 const currentValue = this.textarea.value;
                 const newValue = currentValue.substring(0, start) + ' ' + text + ' ' + currentValue.substring(end);
                 this.textarea.value = newValue.replace(/\s{2,}/g, ' ').trim();
+                var message = newValue + "<br/>" + newValue.trim() + "<br/>123" + "<br/> 123 ";
+                document.getElementById("message_block").innerHTML = message;
                 const newPos = start + text.length + 1;
                 this.textarea.setSelectionRange(newPos, newPos);
                 this.textarea.focus();
